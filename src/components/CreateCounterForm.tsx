@@ -5,8 +5,9 @@ import { CounterItem } from "../types";
 const CreateCounterForm: FC<{ onCreate: (todo: CounterItem) => void }> = ({ onCreate }) => {
   const { pop } = useNavigation();
 
-  const handleSubmit = (values: { title: string }) => {
-    onCreate({ title: values.title, count: 0 });
+  const handleSubmit = (values: { title: string; step: string }) => {
+    const step = parseInt(values.step);
+    onCreate({ title: values.title, count: 0, step: step });
     pop();
   };
 

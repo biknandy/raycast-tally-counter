@@ -6,31 +6,31 @@ import DeleteCounterAction from "./components/DeleteCounter";
 import CreateCounterAction from "./components/CreateCounter";
 
 export default function Command() {
-  const [todos, setCounterItems] = useState<CounterItem[]>([
-    { title: "Counter 1", count: 0 },
-    { title: "Counter 2", count: 0 },
+  const [counters, setCounterItems] = useState<CounterItem[]>([
+    { title: "Counter 1", count: 0, step: 1 },
+    { title: "Counter 2", count: 0, step: 10 },
   ]);
 
   const handleCreate = (todo: CounterItem) => {
-    const newCounterItems = [...todos, todo];
+    const newCounterItems = [...counters, todo];
     setCounterItems(newCounterItems);
   };
 
   const handleDelete = (index: number) => {
-    const newCounterItems = [...todos];
+    const newCounterItems = [...counters];
     newCounterItems.splice(index, 1);
     setCounterItems(newCounterItems);
   };
 
-  const addCount = (index: number) => {
-    const newCounterItems = [...todos];
-    newCounterItems[index].count += 1;
+  const addCount = (index: number, step: number) => {
+    const newCounterItems = [...counters];
+    newCounterItems[index].count += step;
     setCounterItems(newCounterItems);
   };
 
-  const subCount = (index: number) => {
-    const newCounterItems = [...todos];
-    newCounterItems[index].count -= 1;
+  const subCount = (index: number, step: number) => {
+    const newCounterItems = [...counters];
+    newCounterItems[index].count -= step;
     setCounterItems(newCounterItems);
   };
 
@@ -42,22 +42,22 @@ export default function Command() {
         </ActionPanel>
       }
     >
-      {todos.map((todo, index) => (
+      {counters.map((item, index) => (
         <List.Item
           key={index}
           icon={Icon.Dot}
-          title={todo.title}
+          title={item.title}
           accessories={[
             {
-              tag: { value: todo.count.toString(), color: Color.Blue },
+              tag: { value: item.count.toString(), color: Color.Blue },
               icon: Icon.ArrowUpCircleFilled,
             },
           ]}
           actions={
             <ActionPanel>
               <ActionPanel.Section>
-                <AddSubCounter step={1} add={true} onAction={() => addCount(index)} />
-                <AddSubCounter step={1} add={false} onAction={() => subCount(index)} />
+                <AddSubCounter step={1} add={true} onAction={() => addCount(index, item.step)} />
+                <AddSubCounter step={1} add={false} onAction={() => subCount(index, item.step)} />
               </ActionPanel.Section>
               <ActionPanel.Section>
                 <CreateCounterAction onCreate={handleCreate} />
