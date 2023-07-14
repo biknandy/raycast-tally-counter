@@ -1,8 +1,9 @@
-import { Action, ActionPanel, Color, Form, Icon, List, useNavigation } from "@raycast/api";
+import { ActionPanel, Color, Icon, List } from "@raycast/api";
 import { useState } from "react";
 import { CounterItem } from "./types";
-import CreateCounterForm from "./components/CreateCounterForm";
 import AddSubCounter from "./components/AddSubCounter";
+import DeleteCounterAction from "./components/DeleteCounter";
+import CreateCounterAction from "./components/CreateCounter";
 
 export default function Command() {
   const [todos, setCounterItems] = useState<CounterItem[]>([
@@ -37,7 +38,7 @@ export default function Command() {
     <List
       actions={
         <ActionPanel>
-          <CreateCounterItemAction onCreate={handleCreate} />
+          <CreateCounterAction onCreate={handleCreate} />
         </ActionPanel>
       }
     >
@@ -59,8 +60,8 @@ export default function Command() {
                 <AddSubCounter step={1} add={false} onAction={() => subCount(index)} />
               </ActionPanel.Section>
               <ActionPanel.Section>
-                <CreateCounterItemAction onCreate={handleCreate} />
-                <DeleteCounterItemAction onDelete={() => handleDelete(index)} />
+                <CreateCounterAction onCreate={handleCreate} />
+                <DeleteCounterAction onDelete={() => handleDelete(index)} />
               </ActionPanel.Section>
             </ActionPanel>
           }
@@ -69,25 +70,3 @@ export default function Command() {
     </List>
   );
 }
-
-const CreateCounterItemAction = (props: { onCreate: (todo: CounterItem) => void }) => {
-  return (
-    <Action.Push
-      icon={Icon.Pencil}
-      title="Create Counter"
-      shortcut={{ modifiers: ["cmd"], key: "n" }}
-      target={<CreateCounterForm onCreate={props.onCreate} />}
-    />
-  );
-};
-
-const DeleteCounterItemAction = (props: { onDelete: () => void }) => {
-  return (
-    <Action
-      icon={Icon.Trash}
-      title="Delete Counter"
-      shortcut={{ modifiers: ["ctrl"], key: "x" }}
-      onAction={props.onDelete}
-    />
-  );
-};
