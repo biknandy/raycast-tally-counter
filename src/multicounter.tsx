@@ -1,37 +1,55 @@
-import { ActionPanel, Color, Icon, List } from "@raycast/api";
-import { useState } from "react";
+import { ActionPanel, Color, Icon, List, environment } from "@raycast/api";
+import { useEffect, useState } from "react";
 import { CounterItem } from "./types";
 import AddSubCounter from "./components/AddSubCounter";
 import DeleteCounterAction from "./components/DeleteCounter";
 import CreateCounterAction from "./components/CreateCounter";
+import fs from "fs";
+import { STORAGE_FILE } from "./utils";
 
 export default function Command() {
-  const [counters, setCounterItems] = useState<CounterItem[]>([
-    { title: "Counter 1", count: 0, step: 1 },
-    { title: "Counter 2", count: 0, step: 10 },
-  ]);
+  const [counters, setCounterItems] = useState<CounterItem[]>([]);
+
+  // Load counters from file storage
+  useEffect(() => {
+    try {
+      const storedItemsBuffer = fs.readFileSync(STORAGE_FILE);
+      if (!storedItemsBuffer) {
+        return;
+      }
+      const storedItems = JSON.parse(storedItemsBuffer.toString());
+      setCounterItems(storedItems);
+    } catch {
+      fs.mkdirSync(environment.supportPath, { recursive: true });
+    }
+  }, []);
+
+  const handleSave = (counters: CounterItem[]) => {
+    setCounterItems(counters);
+    fs.writeFileSync(STORAGE_FILE, JSON.stringify(counters));
+  };
 
   const handleCreate = (todo: CounterItem) => {
     const newCounterItems = [...counters, todo];
-    setCounterItems(newCounterItems);
+    handleSave(newCounterItems);
   };
 
   const handleDelete = (index: number) => {
     const newCounterItems = [...counters];
     newCounterItems.splice(index, 1);
-    setCounterItems(newCounterItems);
+    handleSave(newCounterItems);
   };
 
   const addCount = (index: number, step: number) => {
     const newCounterItems = [...counters];
     newCounterItems[index].count += step;
-    setCounterItems(newCounterItems);
+    handleSave(newCounterItems);
   };
 
   const subCount = (index: number, step: number) => {
     const newCounterItems = [...counters];
     newCounterItems[index].count -= step;
-    setCounterItems(newCounterItems);
+    handleSave(newCounterItems);
   };
 
   return (
@@ -45,7 +63,7 @@ export default function Command() {
       {counters.map((item, index) => (
         <List.Item
           key={index}
-          icon={Icon.Dot}
+          icon={Icon.Circle}
           title={item.title}
           accessories={[
             {
